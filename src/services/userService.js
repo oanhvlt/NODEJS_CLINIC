@@ -75,28 +75,46 @@ let checkUserEmail = (emailUser) => {
     })
 }
 
-let getUsers = (userId) => {
+// let getUsers = (userId) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             let users = 'abc';
+//             if (userId === 'ALL') {
+//                 users = await db.User.findAll({
+//                     attributes: {
+//                         exclude: ['password']
+//                     }
+//                 });
+//             }
+//             else if (userId) {
+//                 users = await db.User.findOne({
+//                     where: { id: userId },
+//                     attributes: {
+//                         exclude: ['password']
+//                     }
+//                 });
+//             }
+
+//             resolve(users);
+//             console.log(users);
+
+//         } catch (e) {
+//             reject(e);
+//         }
+//     })
+// }
+
+let getAllUsers = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            let users = 'abc';
-            if (userId === 'ALL') {
-                users = await db.User.findAll({
-                    attributes: {
-                        exclude: ['password']
-                    }
-                });
-            }
-            else if (userId) {
-                users = await db.User.findOne({
-                    where: { id: userId },
-                    attributes: {
-                        exclude: ['password']
-                    }
-                });
-            }
+            let users = await db.User.findAll({
+                attributes: {
+                    exclude: ['password']
+                }
+            });
 
             resolve(users);
-            console.log(users);
+            //console.log(users);
 
         } catch (e) {
             reject(e);
@@ -205,7 +223,8 @@ let deleteUser = (userId) => {
 
 module.exports = {
     handleUserLogin,
-    getUsers,
+    getAllUsers,
+    //getUsers,
     createNewUser,
     editUser,
     deleteUser

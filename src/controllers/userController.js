@@ -25,18 +25,27 @@ let handleLoginApi = async (req, res) => {
     })
 }
 
-let handleGetUsers = async (req, res) => {
-    let id = req.query.id; //ALL, id
+// let handleGetUsers = async (req, res) => {
+//     let id = req.query.id; //ALL, id
 
-    if (!id) {
-        return res.status(200).json({
-            errCode: 1,
-            errMessage: 'Missing required parameters!',
-            users: []
-        });
-    }
-    let users = await userService.getUsers(id);
+//     if (!id) {
+//         return res.status(200).json({
+//             errCode: 1,
+//             errMessage: 'Missing required parameters!',
+//             users: []
+//         });
+//     }
+//     let users = await userService.getUsers(id);
 
+//     return res.status(200).json({
+//         errCode: 0,
+//         errMessage: 'OK',
+//         users
+//     });
+// }
+
+let handleGetAllUsers = async (req, res) => {
+    let users = await userService.getAllUsers();
     return res.status(200).json({
         errCode: 0,
         errMessage: 'OK',
@@ -46,7 +55,7 @@ let handleGetUsers = async (req, res) => {
 
 let handleCreateNewUser = async (req, res) => {
     let message = await userService.createNewUser(req.body);
-    console.log(message)
+    //console.log(message)
     return res.status(200).json(message);
 }
 
@@ -70,7 +79,8 @@ let handleDeleteUser = async (req, res) => {
 
 module.exports = {
     handleLoginApi,
-    handleGetUsers,
+    handleGetAllUsers,
+    //handleGetUsers,
     handleCreateNewUser,
     handleEditUser,
     handleDeleteUser
