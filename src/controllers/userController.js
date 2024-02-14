@@ -78,6 +78,12 @@ let handleDeleteUser = async (req, res) => {
 
 let getAllCode = async (req, res) => {
     try {
+        // setTimeout(async () => {
+        //     let typeInput = req.query.type; //ex: http://localhost:8080/allcode?type=status
+        //     let data = await userService.getAllCodeService(typeInput);
+        //     return res.status(200).json(data);
+
+        // }, 5000)
         let typeInput = req.query.type; //ex: http://localhost:8080/allcode?type=status
         let data = await userService.getAllCodeService(typeInput);
         return res.status(200).json(data);

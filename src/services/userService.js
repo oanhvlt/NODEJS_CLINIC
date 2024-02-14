@@ -24,7 +24,7 @@ let handleUserLogin = (email, password) => {
                 //user already exist
                 let user = await db.User.findOne({
                     where: { email: email },
-                    attributes: ['email', 'roleId', 'password'],
+                    attributes: ['email', 'roleId', 'password', 'firstName', 'lastName'],
                     raw: true
                 })
                 if (user) {
@@ -140,10 +140,11 @@ let createNewUser = (data) => {
                     password: hashPasswordFromBcrypt, // lưu hash pass vào DB
                     firstName: data.firstName,
                     lastName: data.lastName,
-                    gender: data.gender === '1' ? true : false,
+                    gender: data.gender,
                     address: data.address,
                     phoneNumber: data.phoneNumber,
-                    roleId: data.roleId
+                    roleId: data.role,
+                    positionId: data.position
                 })
                 resolve({
                     errCode: 0,
