@@ -104,7 +104,7 @@ let checkUserEmail = (emailUser) => {
 //     })
 // }
 
-let getAllUsers = (userId) => {
+let getAllUsers = () => {
     return new Promise(async (resolve, reject) => {
         try {
             let users = await db.User.findAll({
@@ -144,13 +144,51 @@ let createNewUser = (data) => {
                     address: data.address,
                     phoneNumber: data.phoneNumber,
                     roleId: data.role,
-                    positionId: data.position
+                    positionId: data.position,
+                    image: data.avatar,
                 })
                 resolve({
                     errCode: 0,
                     message: 'OK'
                 });
             }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
+let editSummaryUser = (data) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!data.id) {
+                resolve({
+                    errCode: 2,
+                    message: `Missing required parameters!`
+                });
+            }
+            let user = await db.User.findOne({
+                where: { id: data.id },
+                raw: false
+            });
+            if (user) {
+                user.firstName = data.firstName;
+                user.lastName = data.lastName;
+                user.address = data.address;
+
+                await user.save();
+
+                resolve({
+                    errCode: 0,//update
+                    message: `The user is updated.`
+                });
+            } else {
+                resolve({
+                    errCode: 1,
+                    message: `User's not found!`
+                });
+            }
+
         } catch (e) {
             reject(e);
         }
@@ -171,9 +209,19 @@ let editUser = (data) => {
                 raw: false
             });
             if (user) {
+                user.email = data.email;
                 user.firstName = data.firstName;
                 user.lastName = data.lastName;
+                user.phoneNumber = data.phoneNumber;
                 user.address = data.address;
+                user.gender = data.gender;
+                user.roleId = data.role;
+                user.positionId = data.position;
+                if (data.avatar) {
+                    user.image = data.avatar;
+                }
+
+
                 await user.save();
 
                 resolve({
@@ -253,6 +301,7 @@ module.exports = {
     getAllUsers,
     //getUsers,
     createNewUser,
+    editSummaryUser,
     editUser,
     deleteUser,
     getAllCodeService

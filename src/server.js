@@ -32,10 +32,14 @@ app.use(function (req, res, next) { //this is midleware
 
 //config app before use route
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({
+//     extended: true
+// }));
+
+//limit: '50mb': allow upload large file/image
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 //khai báo view 
 viewEngine(app);
