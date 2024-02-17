@@ -30,7 +30,9 @@ let initWebRoutes = (app) => {
 
     //manage doctors
     router.get("/api/top-doctors-home", doctorController.handleGetTopDoctors);
-
+    router.get("/api/get-all-doctors", doctorController.handleGetAllDoctors);
+    router.post("/api/create-doctor-details", doctorController.handleCreateDoctorDetails);
+    router.get("/api/get-doctor-details-by-id", doctorController.handleGetDoctorDetailsById);
     //
     return app.use("/", router);
 }
