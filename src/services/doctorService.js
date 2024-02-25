@@ -55,16 +55,19 @@ let getAllDoctors = () => {
     })
 }
 
-let createDoctorDetails = (inputData) => {
+let saveDoctorDetails = (inputData) => {
     return new Promise(async (resolve, reject) => {
         try {
             if (!inputData.doctorId || !inputData.contentHTML || !inputData.contentMarkdown
-                || !inputData.action) {
+                || !inputData.action || !inputData.selectedPrice || !inputData.selectedPayment
+                || !inputData.selectedProvince || !inputData.nameClinic
+                || !inputData.addressClinic) {
                 resolve({
                     errCode: 1,
-                    errMessage: "Missing parameter"
+                    errMessage: "Missing parameters!"
                 })
             } else {
+                //upsert to Markdown
                 if (inputData.action === ACTIONS_CREATE) {
                     await db.Markdown.create({
                         contentHTML: inputData.contentHTML,
@@ -87,12 +90,39 @@ let createDoctorDetails = (inputData) => {
                         await doctorMarkdown.save();
                     }
                 }
-            }
 
-            resolve({
-                errCode: 0,
-                errMessage: "Save info doctor succeed!"
-            });
+                //upsert to Doctor_indo table
+                let doctorInfo = await db.Doctor_Info.findOne({
+                    where: { doctorId: inputData.doctorId }
+                })
+                if (doctorInfo) {
+                    //update
+                    doctorInfo.doctorId = inputData.doctorId;
+                    doctorInfo.priceId = inputData.selectedPrice;
+                    doctorInfo.paymentId = inputData.selectedPayment;
+                    doctorInfo.provinceId = inputData.selectedProvince;
+                    doctorInfo.addressClinic = inputData.addressClinic;
+                    doctorInfo.nameClinic = inputData.nameClinic;
+                    doctorInfo.note = inputData.note;
+                    await doctorInfo.save();
+                } else {
+                    //create
+                    await db.Doctor_Info.create({
+                        doctorId: inputData.doctorId,
+                        priceId: inputData.selectedPrice,
+                        paymentId: inputData.selectedPayment,
+                        provinceId: inputData.selectedProvince,
+                        addressClinic: inputData.addressClinic,
+                        nameClinic: inputData.nameClinic,
+                        note: inputData.note,
+                    })
+                }
+
+                resolve({
+                    errCode: 0,
+                    errMessage: "Save info doctor succeed!"
+                });
+            }
         } catch (e) {
             reject(e);
         }
@@ -243,7 +273,7 @@ let getScheduleByDate = (doctorIdInput, dateInput) => {
 module.exports = {
     getTopDoctorsHome,
     getAllDoctors,
-    createDoctorDetails,
+    saveDoctorDetails,
     getDoctorDetailsById,
     bulkCreateSchedule,
     getScheduleByDate

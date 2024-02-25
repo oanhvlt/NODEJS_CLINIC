@@ -31,10 +31,10 @@ let handleGetAllDoctors = async (req, res) => {
     }
 }
 
-let handleCreateDoctorDetails = async (req, res) => {
+let handleSaveDoctorDetails = async (req, res) => {
 
     try {
-        let dostors = await doctorService.createDoctorDetails(req.body);
+        let dostors = await doctorService.saveDoctorDetails(req.body);
         return res.status(200).json(dostors);
     } catch (e) {
         console.log(e);
@@ -90,7 +90,7 @@ let handleGetScheduleByDate = async (req, res) => {
 module.exports = {
     handleGetTopDoctors,
     handleGetAllDoctors,
-    handleCreateDoctorDetails,
+    handleSaveDoctorDetails,
     handleGetDoctorDetailsById,
     handleBulkCreateSchedule,
     handleGetScheduleByDate
