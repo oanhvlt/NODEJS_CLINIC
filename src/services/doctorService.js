@@ -106,7 +106,7 @@ let getDoctorDetailsById = (inputId) => {
             if (!inputId) {
                 resolve({
                     errCode: 1,
-                    errMessage: "Missing parameter!"
+                    errMessage: "Missing required parameters!"
                 });
             } else {
                 let data = await db.User.findOne({
@@ -125,7 +125,7 @@ let getDoctorDetailsById = (inputId) => {
                             attributes: ['valueEn', 'valueVi']
                         },
                     ],
-                    //raw: true,
+                    //raw: false,
                     nest: true
                 })
 
@@ -152,7 +152,7 @@ let bulkCreateSchedule = (inputData) => {
             if (!inputData.arrSchedule || !inputData.doctorIdInput || !inputData.dateInput) {
                 resolve({
                     errCode: 1,
-                    errMessage: "Missing required params!"
+                    errMessage: "Missing required parameters!"
                 });
             } else {
                 let schedule = inputData.arrSchedule;
@@ -172,16 +172,17 @@ let bulkCreateSchedule = (inputData) => {
                     attributes: ['doctorId', 'date', 'timeType', 'maxNumber'],
                     raw: true //important to compare existing and toCreate
                 });
-                //format date in DB to compare
-                if (existing && existing.length > 0) {
-                    existing = existing.map(item => {
-                        item.date = new Date(item.date).getTime();
-                        return item;
-                    })
-                }
+                //convert date in DB to timestamp to compare
+                // if (existing && existing.length > 0) {
+                //     existing = existing.map(item => {
+                //         item.date = new Date(item.date).getTime();
+                //         return item;
+                //     })
+                // }
+
                 //compare existing and toCreate
                 let toCreate = _.differenceWith(schedule, existing, (a, b) => {
-                    return a.timeType === b.timeType && a.date === b.date;
+                    return a.timeType === b.timeType && +a.date === +b.date; //+: compare string
                 })
                 //save new data
                 if (toCreate && toCreate.length > 0) {
@@ -200,10 +201,50 @@ let bulkCreateSchedule = (inputData) => {
     })
 }
 
+let getScheduleByDate = (doctorIdInput, dateInput) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorIdInput || !dateInput) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Missing required parameters!"
+                });
+            } else {
+                let data = await db.Schedule.findAll({
+                    where: {
+                        doctorId: doctorIdInput,
+                        date: dateInput
+                    },
+                    include: [
+                        {
+                            model: db.Allcode,
+                            as: 'timeTypeData',
+                            attributes: ['valueEn', 'valueVi']
+                        },
+                    ],
+                    nest: true
+                })
+                if (!data) {
+                    data = [];
+                }
+
+                resolve({
+                    errCode: 0,
+                    data
+                });
+            }
+
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 module.exports = {
     getTopDoctorsHome,
     getAllDoctors,
     createDoctorDetails,
     getDoctorDetailsById,
-    bulkCreateSchedule
+    bulkCreateSchedule,
+    getScheduleByDate
 }
