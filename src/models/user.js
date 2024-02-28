@@ -24,6 +24,12 @@ module.exports = (sequelize, DataTypes) => {
       User.hasOne(models.Doctor_Info, {
         foreignKey: 'doctorId'
       });
+      // User.belongsTo(models.Schedule, {
+      //   foreignKey: 'id', targetKey: 'doctorId', as: 'doctorData'
+      // });
+      User.hasMany(models.Schedule, {
+        foreignKey: 'doctorId'
+      });
     }
   };
   User.init({

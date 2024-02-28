@@ -1,19 +1,28 @@
 import db from "../models/index";
 require('dotenv').config(); //to use process.env
-//import _ from 'lodash';
-//const ACTIONS_CREATE = 'CREATE';
-//const ACTIONS_EDIT = 'EDIT';
+
+import { sendSimpleEmail } from './emailService';
 
 
 let bookAppointment = (inputData) => {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!inputData.email) {
+            if (!inputData.email || !inputData.fullName) {
                 resolve({
                     errCode: 1,
                     errMessage: "Missing parameters!"
                 })
             } else {
+                await sendSimpleEmail({
+                    receiveEmail: inputData.email,
+                    patientName: inputData.fullName,
+                    time: inputData.timeString,
+                    doctorName: inputData.doctorName,
+                    language: inputData.language,
+                    directLink: 'https://www.google.com.vn/',
+
+                });
+
                 //upsert patient
                 //doc: https://sequelize.org/docs/v6/core-concepts/model-querying-finders/
                 let user = await db.User.findOrCreate({
