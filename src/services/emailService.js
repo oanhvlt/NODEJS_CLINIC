@@ -18,9 +18,9 @@ let sendSimpleEmail = async (dataSend) => {
     console.log('receiveEmail:', dataSend.receiveEmail);
     // send mail with defined transport object
     const info = await transporter.sendMail({
-        from: '"EDT" <vulethuyoanh.enterclub@gmail.com>', // sender address
+        from: `"EDT" <${process.env.EMAIL_APP}>`, // sender address
         to: dataSend.receiveEmail, // list of receivers
-        subject: dataSend.language === 'vi' ? "Xác nhận đặt lịch" : "Booking confirm", // Subject line
+        subject: dataSend.language === 'vi' ? "Xác nhận đặt lịch hẹn" : "Booking confirmation", // Subject line
         html: getBodyHTMLEmail(dataSend)
     });
 

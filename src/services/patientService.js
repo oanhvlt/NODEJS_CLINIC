@@ -1,25 +1,31 @@
 import db from "../models/index";
 require('dotenv').config(); //to use process.env
-
 import { sendSimpleEmail } from './emailService';
+//generate token //doc: https://www.npmjs.com/package/uuid
+import { v4 as uuidv4 } from 'uuid';
 
+let buildUrlEmail = (doctorId, token) => {
+    return `${process.env.URL_REACT}/verify-booking/token=${token}&doctorId=${doctorId}`;
+}
 
 let bookAppointment = (inputData) => {
     return new Promise(async (resolve, reject) => {
         try {
-            if (!inputData.email || !inputData.fullName) {
+            if (!inputData.email || !inputData.fullName || !inputData.doctorId
+                || !inputData.date || !inputData.timeType) {
                 resolve({
                     errCode: 1,
                     errMessage: "Missing parameters!"
                 })
             } else {
+                let token = uuidv4();
                 await sendSimpleEmail({
                     receiveEmail: inputData.email,
                     patientName: inputData.fullName,
                     time: inputData.timeString,
                     doctorName: inputData.doctorName,
                     language: inputData.language,
-                    directLink: 'https://www.google.com.vn/',
+                    directLink: buildUrlEmail(inputData.doctorId, token),
 
                 });
 
@@ -48,6 +54,7 @@ let bookAppointment = (inputData) => {
                             doctorId: inputData.doctorId,
                             date: inputData.date, //birthday from FE: 
                             timeType: inputData.timeType,
+                            token: token
                         },
 
                     })
@@ -63,7 +70,43 @@ let bookAppointment = (inputData) => {
         }
     })
 }
+let verifyBookAppointment = (inputData) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!inputData.token || !inputData.doctorId) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Missing parameters!"
+                })
+            } else {
+                let appointment = await db.Booking.findOne({
+                    where: {
+                        doctorId: inputData.doctorId,
+                        token: inputData.token,
+                        statusId: 'S1'
+                    }//,raw: false
+                })
 
+                if (appointment) {
+                    appointment.statusId = 'S2';
+                    await appointment.save();
+                    resolve({
+                        errCode: 0,
+                        errMessage: "Save appointment succeed!",
+                    });
+                } else {
+                    resolve({
+                        errCode: 2,
+                        errMessage: "Appointment has been activated or does not exist!",
+                    });
+                }
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
 module.exports = {
-    bookAppointment
+    bookAppointment,
+    verifyBookAppointment
 }
