@@ -5,7 +5,7 @@ import { sendSimpleEmail } from './emailService';
 import { v4 as uuidv4 } from 'uuid';
 
 let buildUrlEmail = (doctorId, token) => {
-    return `${process.env.URL_REACT}/verify-booking/token=${token}&doctorId=${doctorId}`;
+    return `${process.env.URL_REACT}/verify-booking?token=${token}&doctorId=${doctorId}`;
 }
 
 let bookAppointment = (inputData) => {

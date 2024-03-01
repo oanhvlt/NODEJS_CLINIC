@@ -3,7 +3,7 @@ require('dotenv').config();
 import nodemailer from 'nodemailer';
 
 let sendSimpleEmail = async (dataSend) => {
-    console.log('dataSend:', dataSend);
+    //console.log('dataSend:', dataSend);
     //doc: https://nodemailer.com/smtp/testing/ >> Examples
     let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -15,12 +15,11 @@ let sendSimpleEmail = async (dataSend) => {
             pass: process.env.EMAIL_APP_PASSWORD,
         },
     });
-    console.log('receiveEmail:', dataSend.receiveEmail);
     // send mail with defined transport object
     const info = await transporter.sendMail({
         from: `"EDT" <${process.env.EMAIL_APP}>`, // sender address
         to: dataSend.receiveEmail, // list of receivers
-        subject: dataSend.language === 'vi' ? "Xác nhận đặt lịch hẹn" : "Booking confirmation", // Subject line
+        subject: dataSend.language === 'vi' ? "Xác nhận đặt lịch" : "Booking confirmation", // Subject line
         html: getBodyHTMLEmail(dataSend)
     });
 
