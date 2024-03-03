@@ -430,6 +430,50 @@ let getProfileDoctorById = (doctorIdInput) => {
     })
 }
 
+let getListPatientForDoctor = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorId || !date) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Missing required parameters!"
+                });
+            } else {
+                let data = await db.Booking.findAll({
+                    where: {
+                        statusId: 'S2',
+                        doctorId: doctorId,
+                        date: date
+                    },
+                    include: [
+                        //get data form user table
+                        {
+                            model: db.User, as: 'patientData',
+                            attributes: ['email', 'firstName', 'phoneNumber', 'address', 'gender'],
+                            include: [
+                                {
+                                    model: db.Allcode, as: 'genderData', attributes: ['valueEn', 'valueVi']
+                                },
+                            ],
+                        },
+
+                    ],
+                    //raw: false,
+                    //nest: true //trả về object bên trong object
+                })
+
+                resolve({
+                    errCode: 0,
+                    data
+                });
+            }
+
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 module.exports = {
     getTopDoctorsHome,
     getAllDoctors,
@@ -438,5 +482,6 @@ module.exports = {
     bulkCreateSchedule,
     getScheduleByDate,
     getExtraInfoDoctorById,
-    getProfileDoctorById
+    getProfileDoctorById,
+    getListPatientForDoctor
 }
