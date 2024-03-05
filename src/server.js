@@ -3,9 +3,9 @@ import express from 'express';
 import bodyParser from "body-parser";
 import viewEngine from "./config/viewEngine";
 import initWebRoutes from "./route/web";
-import connectDB from "./config/connectDB";
+//import connectDB from "./config/connectDB";
 require('dotenv').config(); //khai báo thư viện dotenv
-//import db from "./models/index";
+import db from "./models/index";
 
 let app = express();
 
@@ -47,8 +47,8 @@ viewEngine(app);
 initWebRoutes(app);
 
 //connect DB before listen
-connectDB();
-//db.connectDB;
+//connectDB();
+db.connectDB;
 
 //GET PORT đã khai bao tại file .env
 let port = process.env.PORT || 6969; //If PORT === undefined => port = 6969

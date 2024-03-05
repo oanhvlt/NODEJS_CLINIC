@@ -1,5 +1,6 @@
 import db from "../models/index";
 import _ from 'lodash';
+import emailService from '../services/emailService';
 
 require('dotenv').config(); //to use process.env
 const MAX_NUMBER_SCHEDULE = process.env.MAX_NUMBER_SCHEDULE;
@@ -456,6 +457,9 @@ let getListPatientForDoctor = (doctorId, date) => {
                                 },
                             ],
                         },
+                        {
+                            model: db.Allcode, as: 'timeTypeBooking', attributes: ['valueEn', 'valueVi']
+                        },
 
                     ],
                     //raw: false,
@@ -474,6 +478,44 @@ let getListPatientForDoctor = (doctorId, date) => {
     })
 }
 
+let sendRemedy = (inputData) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!inputData.email || !inputData.doctorId || !inputData.patientId || !inputData.timeType) {
+                resolve({
+                    errCode: 1,
+                    errMessage: `Missing parameter.`
+                })
+            } else {
+                //update patient status
+
+                let booking = await db.Booking.findOne({
+                    where: {
+                        doctorId: inputData.doctorId,
+                        patientId: inputData.patientId,
+                        timeType: inputData.timeType,
+                        statusId: 'S2',
+                    }
+                })
+                if (booking) {
+                    booking.statusId = 'S3';
+                    await booking.save();
+                }
+
+                //send email
+                await emailService.sendAttachment(inputData);
+
+                resolve({
+                    errCode: 0,
+                    errMessage: "Update succeed!",
+                });
+            }
+        } catch (e) {
+            reject(e);
+        }
+    })
+}
+
 module.exports = {
     getTopDoctorsHome,
     getAllDoctors,
@@ -483,5 +525,6 @@ module.exports = {
     getScheduleByDate,
     getExtraInfoDoctorById,
     getProfileDoctorById,
-    getListPatientForDoctor
+    getListPatientForDoctor,
+    sendRemedy
 }

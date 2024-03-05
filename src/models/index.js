@@ -8,25 +8,37 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-
-const config = require(__dirname + '/../config/config.json')[env];
+//const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
-let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
-}
+const customizeConfig = {
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  dialect: process.env.DB_DIALECT,
+  logging: false,
+  timezone: "+07:00"
+};
 
-// let connectDB = async () => {
-//   try {
-//     await sequelize.authenticate();
-//     console.log('Connection has been established successfully.');
-//   } catch (error) {
-//     console.error('Unable to connect to the database:', error);
-//   }
+let sequelize = new Sequelize(
+  process.env.DB_DATABASE_NAME,
+  process.env.DB_USERNAME,
+  null,
+  customizeConfig);
+
+// if (config.use_env_variable) {
+//   sequelize = new Sequelize(process.env[config.use_env_variable], config);
+// } else {
+//   sequelize = new Sequelize(config.database, config.username, config.password, config);
 // }
+
+let connectDB = async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Connection has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+}
 
 fs
   .readdirSync(__dirname)
@@ -46,6 +58,6 @@ Object.keys(db).forEach(modelName => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-//db.connectDB = connectDB();
+db.connectDB = connectDB();
 
 module.exports = db;

@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec babel-node src/server.js"
+    "start": "nodemon --exec babel-node src/server.js",
+    "build-src": "babel src -d build --copy-files",
+    "build": "node build/server.js"
   },
   "keywords": [
     "demo",
@@ -14,6 +16,10 @@
   "author": "oanhvlt",
   "license": "ISC",
   "dependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/node": "^7.12.10",
+    "@babel/preset-env": "^7.12.10",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
@@ -25,9 +31,6 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.10",
-    "@babel/node": "^7.12.10",
-    "@babel/preset-env": "^7.12.10",
     "lodash": "^4.17.21",
     "nodemon": "^2.0.7",
     "sequelize-cli": "^6.2.0"
